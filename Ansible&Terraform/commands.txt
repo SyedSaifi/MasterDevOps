@@ -1,0 +1,14 @@
+1. ssh into ec2 with private key
+ssh -i "ansible.pem" ubuntu@ec2-3-90-180-243.compute-1.amazonaws.com
+
+2. ssh with password
+ssh ubuntu@ec2-3-90-180-243
+
+3. generate key
+ssh-keygen
+
+4. save the key
+.ssh/authorized_keys
+
+5. Ping all nodes from ansible controller
+ansible -m ping all
