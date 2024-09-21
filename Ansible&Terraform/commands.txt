@@ -1,3 +1,59 @@
+########## Ansible Installation ##########
+$ sudo apt update
+$ sudo apt install software-properties-common
+$ sudo add-apt-repository --yes --update ppa:ansible/ansible
+$ sudo apt install ansible
+---------------------------------------------------------------------------------
+########## Ansible Config ############
+ansible.cfg
+[defaults]
+inventory=./dev
+---------------------------------------------------------------------------------
+########### Inventory Setup #################
+dev
+[web1]
+54.160.139.40 ansible_user=ubuntu ansible_ssh_private_key_file=key.pem
+
+[webserver]
+web1 ansible_host=54.160.139.40 ansible_user=ubuntu
+web2 ansible_host=54.175.130.222 ansible_user=ec2_user ansible_ssh_private_key_file=key.pem
+
+[webserver:vars]
+pkg_name=test
+
+----------------------------------------------------------------------------------
+######### Playbook Sample #################
+---
+- hosts: web1
+  become: true
+  max_fail_percentage: 20 //or
+  any_errors_fatal: true
+  tasks:
+    - name: Install apache
+      apt: 
+	    name: "{{item}}" 
+		state=present
+	  loop:
+	    - apache2
+		- nano
+		
+	- name: Deploy custom template
+	  template:
+	    src: index.html.j2
+		dest: /var/www/html/index.html
+		
+    - name: Install apache
+      apt: name=apache2 state=present
+	  tags: install
+	  register: result
+	  failed_when: 'Error' in result.stdout
+
+    - name: Start apache
+      service: name=apache2 state=started
+	  tags: config
+	  ignore_errors: true
+----------------------------------------------------------------------------------
+##### Setup command ############
 1. ssh into ec2 with private key
 ssh -i "ansible.pem" ubuntu@ec2-3-90-180-243.compute-1.amazonaws.com
 
@@ -12,3 +68,35 @@ ssh-keygen
 
 5. Ping all nodes from ansible controller
 ansible -m ping all
+-----------------------------------------------------------------------------------
+######### Playbook command ########
+6. Run playbook
+ansible-playbook playbooks/install-apache.yml
+
+7. Run playbook dryrun
+ansible-playbook playbooks/install-apache.yml --check
+
+8. Start at task
+ansible-playbook playbooks/install-apache.yml --start-at-task "Start Apache"
+
+9. Run tag task
+ansible-playbook playbooks/install-apache.yml --tags "install"
+
+10. Skip tag
+ansible-playbook playbooks/apache-apt-service.yml --skip-tags "install"
+
+11. Runtime variable
+ansible-playbook playbooks/apache-apt-service.yml --extra-vars pkg_name=test
+
+-----------------------------------------------------------------------------
+##### Ansible Galaxy for Roles #############
+>> ansible-galaxy init web
+>> tree web
+
+##### Ansible Vault  #############
+>> ansible-vault encrypt dev
+
+ansible-playbook playbooks/apache-apt-service.yml --ask-vault-pass
+ansible-playbook playbooks/apache-apt-service.yml --vault-password-file abc.txt
+
+>> ansible-vault decrypt dev

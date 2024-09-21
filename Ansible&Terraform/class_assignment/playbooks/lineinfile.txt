@@ -1,0 +1,14 @@
+---
+- hosts: web1
+  become: true
+  tasks:
+    - name: Update apache port
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: "^Listen 90"
+        line: "Listen 80"
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service: name=apache2 state=restarted

@@ -1,0 +1,11 @@
+1. Create individual playbooks for all the below modules - 30 mins
+- Copy
+- Lineinfile
+- Command
+- Shell
+- apt
+- Services
+
+2. Create a playbook to install apache and deploy an html application from your public git repo. Restart the apache post successful deployment. - 15 mins
+
+3. Add "Welcome to server" line in systems welcome message - 15 mins

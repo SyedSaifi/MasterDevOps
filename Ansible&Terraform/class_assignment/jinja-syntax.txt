@@ -1,0 +1,60 @@
+String Filters - 
+
+The name is Bond.
+
+my_name: Bond
+
+The name is {{ my_name }} = The name is Bond
+The name is {{ my_name | upper }} = The name is BOND
+The name is {{ my_name | lower }} = The name is bond
+The name is {{ my_name | title }} = The name is Bond
+The name is {{ my_name | replace("Bond", "James") | lower }} = The name is James
+
+----------------------------------------------------------------------------------------
+
+Numeric Filters (List and set) - 
+ {{ [1,2,3] | min }} = 1
+ {{ [1,2,3] | max }} = 3
+ {{ [1,2,3,4,3,2] | unique }} = 1,2,3,4
+ {{ 100 | random }} = random number from 0 to 100
+
+----------------------------------------------------------------------------------------
+
+loops -
+
+{% for number in [0,1,2,3] %}
+	{{ number }}
+{% endfor %}
+
+----------------------------------------------------------------------------------------
+ condition - 
+
+{% for number in [0,1,2,3] %}
+  {% if number == 2 %}
+	{{ number }}
+  {% endif %}
+{% endfor %}
+
+----------------------------------------------------------------------------------------
+
+File filter - 
+
+{{ "/etc/ansible" | basename }} = ansible
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

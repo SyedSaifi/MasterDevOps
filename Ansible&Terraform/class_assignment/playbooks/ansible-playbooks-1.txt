@@ -1,0 +1,89 @@
+---
+- hosts: web1
+  become: true
+  tasks:
+    - name: Ubuntu block
+      block:
+        - name: Install apache on ubuntu
+          apt: name=apache state=present
+
+        - name: Start apache on ubuntu
+          service: name=apache2 state=started
+      when: ansible_os_family == "Debian"
+      rescue:
+        - debug:
+            msg: "From rescue block"
+      always:
+        - debug:
+            msg: "From Always block"
+
+    - block:
+        - name: Install https on AL
+          yum: name=httpd state=present
+
+        - name: start httpd on AL
+          service: name=httpd state=started
+      when: ansible_os_family == "RedHat"
+---
+- hosts: web1
+  become: true
+  tasks:
+    - name: Install apache on ubuntu
+      apt: name=apache2 state=present
+      when: ansible_os_family == "Debian"
+
+    - name: Start apache on ubuntu
+      service: name=apache2 state=started
+      when: ansible_os_family == "Debian"
+
+    - name: Install https on AL
+      yum: name=httpd state=present
+      when: ansible_os_family == "RedHat"
+
+    - name: start httpd on AL
+      service: name=httpd state=started
+      when: ansible_os_family == "RedHat"
+- hosts: web1
+  become: true
+  vars:
+    pkg_name: nano
+  tasks:
+    - name: Install {{ pkg_name }}
+      apt: name="{{ pkg_name }}" state=present
+
+---
+- hosts: web1
+  become: true
+  tasks:
+    - name: Install apache
+      apt: name=apache2 state=present
+      tags: install
+
+    - name: Start Apache
+      service: name=apache2 state=started
+      tags: config
+---
+- hosts: web1
+  tasks:
+    - name: Create a dir
+      shell: mkdir test2
+      register: result
+
+    - debug:
+        var: result
+- hosts: web1
+  become: true
+  vars:
+    pkg_name: nano
+  tasks:
+    - name: Install {{ pkg_name }}
+      apt: name="{{ pkg_name }}" state=present
+
+    - name: Using other host vars
+      apt: name="{{ hostvars['web2'].pkg_name2 }}" state=present
+
+- hosts: web1
+  become: true
+  tasks:
+    - name: start {{ pkg_name }}
+      service: name="{{ pkg_name }}" state=started

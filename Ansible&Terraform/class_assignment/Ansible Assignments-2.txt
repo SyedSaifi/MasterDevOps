@@ -1,0 +1,4 @@
+1. Set up 2 ansible nodes using ubuntu and amazon Linux
+2. Install and start Apache in both nodes using one playbook only
+3. Update service result of apache in the welcome message of the respective machine(irrespective of failure or success)
+4. Print the same result as your welcome message on screen

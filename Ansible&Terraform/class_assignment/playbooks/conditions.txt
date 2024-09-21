@@ -1,0 +1,25 @@
+---
+- hosts: web1
+  become: true
+  tasks:
+    - block:
+      - name: Install apache on Ubuntu
+        apt: name=apache2 state=present
+
+      - name: Start apache on Ubuntu
+        service: name=apache2 state=started
+      when: ansible_os_family == "Debain"
+      rescue:
+        debug:
+          msg: "From rescue"
+      always:
+        - debug:
+            msg: "From debug"
+
+    - name: Install apache on AL
+      apt: name=apache2 state=present
+      when: ansible_os_family == "RedHat"
+
+    - name: Start apache on AL
+      service: name=apache2 state=started
+      when: ansible_os_family == "RedHat"

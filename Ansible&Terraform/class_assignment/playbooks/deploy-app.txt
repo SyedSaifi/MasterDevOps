@@ -1,0 +1,13 @@
+---
+- hosts: web1
+  become: true
+  tasks:
+    - name: Deploy application
+      copy:
+        src: index.html
+        dest: /var/www/html/
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service: name=apache2 state=restarted
