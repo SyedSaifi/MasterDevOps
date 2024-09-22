@@ -1,0 +1,58 @@
+---
+- hosts: webservers
+  become: true
+  vars:
+    app_name: "my_blog"
+    app_source_dir: "."
+    app_dest_dir: "/var/www/my_blog"
+    nginx_template: "templates/nginx_app_template.j2"
+    nginx_conf_dest: "/etc/nginx/sites-available/my_blog"
+    nginx_conf_link: "/etc/nginx/sites-enabled/my_blog"
+    server_name: "54.81.252.58"
+
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: Copy application files to the server
+      copy:
+        src: "{{ app_source_dir }}/"
+        dest: "{{ app_dest_dir }}"
+        #owner: www-data
+        #group: www-data
+        #mode: '0755'
+        recurse: yes
+
+    - name: Create Nginx configuration file from template
+      template:
+        src: "{{ nginx_template }}"
+        dest: "{{ nginx_conf_dest }}"
+        #owner: root
+        #group: root
+        #mode: '0644'
+
+    - name: Enable Nginx site by creating symlink
+      file:
+        src: "{{ nginx_conf_dest }}"
+        dest: "{{ nginx_conf_link }}"
+        state: link
+
+    - name: Test Nginx configuration
+      command: nginx -t
+      notify:
+        - Reload Nginx
+
+    - name: Ensure Nginx is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
