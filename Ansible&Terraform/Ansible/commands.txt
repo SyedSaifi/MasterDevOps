@@ -61,7 +61,7 @@ ssh -i "ansible.pem" ubuntu@ec2-3-90-180-243.compute-1.amazonaws.com
 ssh ubuntu@ec2-3-90-180-243
 
 3. generate key
-ssh-keygen
+ssh-keygen -t rsa
 
 4. save the key
 .ssh/authorized_keys
